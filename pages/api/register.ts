@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         // Проверяем, существует ли пользователь
-        const existingUser = await pool.query('SELECT * FROM "Users" WHERE username = $1', [username]);
+        const existingUser = await pool.query('SELECT * FROM Users WHERE username = $1', [username]);
         if (existingUser.rows.length > 0) {
             return res.status(400).json({ message: 'Пользователь уже существует' });
         }
@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Сохраняем пользователя в базу данных
         const result = await pool.query(
-            'INSERT INTO "Users" (username, password, id) VALUES ($1, $2, $3) RETURNING *',
+            'INSERT INTO Users (username, password, id) VALUES ($1, $2, $3) RETURNING *',
             [username, hashedPassword, uuid]
         );
 
