@@ -8,7 +8,7 @@ export default async function AddProduct(req: NextApiRequest, res: NextApiRespon
     if (req.method !== "POST") {
         return res.status(405).json({ message: "Метод не поддерживается" });
     }
-    const { name, image, average_rating, company } = await req.body;
+    const { name, image, company, description } = await req.body;
 
     try {
         // Проверяем, существует ли пользователь
@@ -19,8 +19,8 @@ export default async function AddProduct(req: NextApiRequest, res: NextApiRespon
 
         // Сохраняем пользователя в базу данных
         const result = await pool.query(
-            'INSERT INTO products (name, image, company) VALUES ($1, $2, $3) RETURNING *',
-            [name, image, company]
+            'INSERT INTO products (name, image, company, description) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, image, company, description]
         );
 
         const newProduct = result.rows[0];
@@ -30,7 +30,8 @@ export default async function AddProduct(req: NextApiRequest, res: NextApiRespon
             product: {
                 name: newProduct.name,
                 image: newProduct.image,
-                company: newProduct.company
+                company: newProduct.company,
+                description: newProduct.description
             },
         });
     } catch (error) {

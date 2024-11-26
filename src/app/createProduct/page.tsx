@@ -8,6 +8,7 @@ interface ProductFormData {
     name: string;
     image: string;
     company: string;
+    description: string;
 }
 
 export default function AddProductForm() {
@@ -15,6 +16,7 @@ export default function AddProductForm() {
         name: "",
         image: "",
         company: "",
+        description: "",
     });
     const [message, setMessage] = useState<string | null>(null);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -30,6 +32,7 @@ export default function AddProductForm() {
         if (!formData.name.trim()) validationErrors.name = "Название обязательно";
         if (!formData.image.trim()) validationErrors.image = "Ссылка на изображение обязательна";
         if (!formData.company.trim()) validationErrors.company = "Компания обязательна";
+        if (!formData.description.trim()) validationErrors.description = "Описание обязательно";
 
         setErrors(validationErrors);
         return Object.keys(validationErrors).length === 0;
@@ -49,7 +52,7 @@ export default function AddProductForm() {
             const result = await response.json();
             if (response.ok) {
                 setMessage("Товар успешно добавлен!");
-                setFormData({ name: "", image: "", company: "" });
+                setFormData({ name: "", image: "", company: "", description: "" });
                 router.push("/")
             } else {
                 setMessage(result.message || "Ошибка при добавлении товара");
@@ -109,7 +112,20 @@ export default function AddProductForm() {
                     />
                     {errors.company && <p className="text-red-600 text-sm">{errors.company}</p>}
                 </div>
-
+                <div className="mb-4">
+                    <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+                        Описание товара
+                    </label>
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder="Описание товара"
+                        value={formData.description}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        onChange={handleChange}
+                    />
+                    {errors.description && <p className="text-red-600 text-sm">{errors.description}</p>}
+                </div>
                 <button
                     type="submit"
                     className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700"

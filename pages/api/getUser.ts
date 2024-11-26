@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function getUser(req: NextApiRequest, res: NextApiResponse) {
-    console.log('Зашел')
     if (req.method === 'GET') {
         const authHeader = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
