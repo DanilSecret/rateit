@@ -37,7 +37,6 @@ export default async function Login(req: NextApiRequest, res: NextApiResponse) {
         const tokenPayload = {
             userId: userData.id,
             userRole: userData.role,
-            profileAccess: false,
         };
         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET!, {
             expiresIn: "1d",
@@ -45,7 +44,7 @@ export default async function Login(req: NextApiRequest, res: NextApiResponse) {
 
         // Создаем cookie
         const serializedCookie = serialize("auth_token", token, {
-            httpOnly: true,
+            httpOnly: false,
             sameSite: "strict",
             secure: process.env.NODE_ENV === "production",
             maxAge: 86400,
