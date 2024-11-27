@@ -53,11 +53,12 @@ export default function Home() {
                 Создать товар
             </Link>
             <div className="flex flex-wrap gap-4 p-5">
-                {isLoading ? ( // Если загрузка активна
+                {isLoading ? (
                     <p>Загрузка товаров...</p>
                 ) : products.length > 0 ? (
                     products.map((product) => (
-                        <div
+                        <Link
+                            href={`/products/${product.id}`}
                             key={product.id}
                             className="border border-gray-300 rounded-lg p-4 shadow-md w-[300px]"
                         >
@@ -65,8 +66,8 @@ export default function Home() {
                                 <Image
                                     src={product.image}
                                     alt={product.name}
-                                    width={200}
-                                    height={200}
+                                    width={180}
+                                    height={180}
                                     className="object-cover rounded-md"
                                 />
                             ) : (
@@ -85,7 +86,7 @@ export default function Home() {
                                 Рейтинг: {product.average_rating}
                             </p>
                             <p className="text-sm text-gray-600">Комментарии: {product.comm_count}</p>
-                        </div>
+                        </Link>
                     ))
                 ) : (
                     <p>Товары отсутствуют</p>
