@@ -58,7 +58,8 @@ export function Header() {
                         <div className="flex gap-5 justify-end">
                             <Link href="/" className="w-full bg-indigo-600 text-white py-1 px-2 rounded-lg flex gap-2 hover:bg-indigo-700">
                                 Написать отзыв
-                                <Image src="hand.svg" width={25} height={25} alt=""/>
+                                <Image src="/hand.svg" width={25} height={25} alt=""/>
+
                             </Link>
                             <button className="flex items-center bg-red-600 text-white py-1 px-2 rounded-lg hover:bg-red-700" onClick={destroyCookie}>Выйти</button>
                         </div>
@@ -66,7 +67,7 @@ export function Header() {
                         <div className="flex gap-5 justify-end" >
                             <Link href="/auth/" className="w-full bg-indigo-600 text-white py-1 px-2 rounded-lg flex gap-2 hover:bg-indigo-700">
                                 Написать отзыв
-                                <Image src="hand.svg" width={25} height={25} alt=""/>
+                                <Image src="/hand.svg" width={25} height={25} alt=""/>
                             </Link>
                             <Link href="/auth/" className="flex items-center bg-green-600 text-white py-1 px-2 rounded-lg hover:bg-green-700">
                                 Войти

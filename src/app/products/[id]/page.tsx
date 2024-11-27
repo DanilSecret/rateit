@@ -1,7 +1,8 @@
 "use client"
-
+import Image from "next/image";
 import { useEffect, useState } from 'react';
 import {useParams} from "next/navigation";
+import {Header} from "@/app/components/header";
 
 interface Product {
     id: number;
@@ -52,25 +53,30 @@ export default function ProductPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row items-center bg-white shadow-md rounded-lg overflow-hidden">
-                <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full md:w-1/2 h-80 object-cover"
-                />
-                <div className="w-full md:w-1/2 p-6">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
-                    <p className="text-gray-600 text-sm mb-4">Производитель: <span className="text-gray-800">{product.company}</span></p>
-                    <p className="text-gray-600 text-sm mb-4">
-                        Рейтинг: <span className="text-yellow-500 font-bold">{product.average_rating}</span> ⭐
-                    </p>
-                    <p className="text-gray-600 text-sm mb-4">
-                        Отзывы: <span className="font-semibold">{product.comm_count}</span>
-                    </p>
-                    <p className="text-gray-600 mb-6">{product.description}</p>
+        <div>
+            <Header/>
+            <div className="max-w-4xl mx-auto px-4 py-8">
+                <div className="flex flex-col md:flex-row items-center bg-white shadow-md rounded-lg overflow-hidden">
+                    <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full md:w-1/2 h-80 object-cover"
+                    />
+                    <div className="w-full md:w-1/2 p-6">
+                        <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
+                        <p className="text-gray-600 text-sm mb-4">Производитель: <span
+                            className="text-gray-800">{product.company}</span></p>
+                        <p className="text-gray-600 text-sm mb-4">
+                            Рейтинг: <span className="text-yellow-500 font-bold">{product.average_rating}</span> ⭐
+                        </p>
+                        <p className="text-gray-600 text-sm mb-4">
+                            Отзывы: <span className="font-semibold">{product.comm_count}</span>
+                        </p>
+                        <p className="text-gray-600 mb-6">{product.description}</p>
+                    </div>
                 </div>
             </div>
         </div>
+
     );
 }
