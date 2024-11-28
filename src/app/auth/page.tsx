@@ -3,6 +3,7 @@
 import { useState } from "react";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface LoginFormData {
     username: string;
@@ -106,9 +107,20 @@ export default function LoginForm() {
                     />
                     {errors.password && <p className="text-red-600">{errors.password}</p>}
                 </div>
-                <button type="submit" className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700">
+                <button
+                    type="submit"
+                    className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700"
+                >
                     Войти
                 </button>
+                <div className="mt-4">
+                    <Link
+                        href="/sign/"
+                        className="block text-center bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700"
+                    >
+                        Зарегистрироваться
+                    </Link>
+                </div>
                 {message && <p className="w-full text-center text-red-600 mt-4">{message}</p>}
             </form>
         </div>

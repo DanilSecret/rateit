@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import {useRouter} from "next/navigation";
-
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ProductFormData {
     name: string;
@@ -20,7 +19,36 @@ export default function AddProductForm() {
     });
     const [message, setMessage] = useState<string | null>(null);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    const router = useRouter()
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // Статус администратора
+    const router = useRouter();
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            try {
+                const response = await fetch("/api/getUserInf", {
+                    method: "GET",
+                    credentials: "include", // Для отправки куки
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user information");
+                }
+
+                const data = await response.json();
+                if (data.userRole === "admin") {
+                    setIsAdmin(true); // Пользователь администратор
+                } else {
+                    setIsAdmin(false); // Пользователь не имеет доступа
+                    router.push("/"); // Перенаправляем
+                }
+            } catch (error) {
+                console.error("Ошибка проверки роли:", error);
+                router.push("/"); // Перенаправляем в случае ошибки
+            }
+        };
+
+        checkAdmin();
+    }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -53,7 +81,7 @@ export default function AddProductForm() {
             if (response.ok) {
                 setMessage("Товар успешно добавлен!");
                 setFormData({ name: "", image: "", company: "", description: "" });
-                router.push("/")
+                router.push("/");
             } else {
                 setMessage(result.message || "Ошибка при добавлении товара");
             }
@@ -63,11 +91,18 @@ export default function AddProductForm() {
         }
     };
 
+    if (isAdmin === null) {
+        return <div>Проверка прав доступа...</div>; // Пока статус не определён
+    }
+
+    if (!isAdmin) {
+        return null; // Не показываем ничего, если доступ запрещён
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
                 <h1 className="text-xl font-semibold text-center mb-4">Добавить продукт</h1>
-
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                         Название
@@ -82,7 +117,6 @@ export default function AddProductForm() {
                     />
                     {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
                 </div>
-
                 <div className="mb-4">
                     <label htmlFor="image" className="block text-sm font-medium text-gray-700">
                         Ссылка на изображение
@@ -97,7 +131,6 @@ export default function AddProductForm() {
                     />
                     {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
                 </div>
-
                 <div className="mb-4">
                     <label htmlFor="company" className="block text-sm font-medium text-gray-700">
                         Компания
@@ -113,7 +146,7 @@ export default function AddProductForm() {
                     {errors.company && <p className="text-red-600 text-sm">{errors.company}</p>}
                 </div>
                 <div className="mb-4">
-                    <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                         Описание товара
                     </label>
                     <input

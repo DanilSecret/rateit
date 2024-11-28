@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Header } from "@/app/components/header";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 
 interface Product {
     id: number;
@@ -17,14 +18,13 @@ interface Product {
 export default function Home() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [cookies] = useCookies(["auth_token"]);
+    const [currUserRole, setCurrUserRole] = useState("");
 
     const fetchProducts = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch("/api/getAllProd", {
-                method: "GET",
-            });
-
+            const response = await fetch("/api/getAllProd", { method: "GET" });
             const result = await response.json();
 
             if (response.ok) {
@@ -39,26 +39,65 @@ export default function Home() {
         }
     };
 
+    const checkRole = async () => {
+        try {
+            const response = await fetch(`/api/getUserInf?cookie=${cookies}`, { method: "GET" });
+            const result = await response.json();
+
+            if (response.ok) {
+                setCurrUserRole(result.userRole);
+            } else {
+                console.error("Ошибка получения данных");
+            }
+        } catch (error) {
+            console.error("Ошибка при отправке данных:", error);
+        }
+    };
+
+    const deleteProduct = async (id: number) => {
+        if (!confirm("Вы уверены, что хотите удалить этот товар?")) return;
+
+        try {
+            const response = await fetch(`/api/deleteProduct?id=${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${cookies.auth_token}`,
+                },
+            });
+
+            if (response.ok) {
+                setProducts((prev) => prev.filter((product) => product.id !== id));
+                alert("Товар успешно удален.");
+            } else {
+                console.error("Ошибка при удалении товара");
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
+        checkRole();
     }, []);
 
     return (
         <div>
             <Header />
-            <Link
-                href="/createProduct/"
-                className="flex justify-center items-center bg-green-600 text-white py-1 px-2 rounded-lg hover:bg-green-700 w-[130px] m-5"
-            >
-                Создать товар
-            </Link>
+            {currUserRole === "admin" ? (
+                <Link
+                    href="/createProduct/"
+                    className="flex justify-center items-center bg-green-600 text-white py-1 px-2 rounded-lg hover:bg-green-700 w-[150px] m-5"
+                >
+                    + Добавить товар
+                </Link>
+            ) : null}
             <div className="flex flex-wrap gap-4 p-5">
                 {isLoading ? (
                     <p>Загрузка товаров...</p>
                 ) : products.length > 0 ? (
                     products.map((product) => (
-                        <Link
-                            href={`/products/${product.id}`}
+                        <div
                             key={product.id}
                             className="border border-gray-300 rounded-lg p-4 shadow-md w-[300px]"
                         >
@@ -86,7 +125,23 @@ export default function Home() {
                                 Рейтинг: {product.average_rating}
                             </p>
                             <p className="text-sm text-gray-600">Комментарии: {product.comm_count}</p>
-                        </Link>
+                            {currUserRole === "admin" && (
+                                <div className="flex gap-2 mt-4">
+                                    <Link
+                                        href={`/editProduct/${product.id}`}
+                                        className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                    >
+                                        Изменить
+                                    </Link>
+                                    <button
+                                        onClick={() => deleteProduct(product.id)}
+                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    >
+                                        Удалить
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     ))
                 ) : (
                     <p>Товары отсутствуют</p>

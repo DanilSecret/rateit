@@ -23,7 +23,7 @@ export function Header() {
             setIsAuth(true);
             const fetchUserData = async () => {
                 try {
-                    const response = await fetch('/api/getUser', {
+                    const response = await fetch('/api/getUserInf', {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${cookies.auth_token}`

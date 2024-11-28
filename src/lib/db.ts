@@ -9,5 +9,11 @@ const pool = new Pool({
 
 });
 
+process.on('SIGTERM', async () => {
+    console.log("Closing database connections...");
+    await pool.end();
+    console.log("Database connections closed.");
+    process.exit(0);
+});
 
 export default pool;
