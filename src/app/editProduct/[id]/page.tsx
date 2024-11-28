@@ -26,7 +26,7 @@ export default function EditProduct() {
             try {
                 const response = await fetch("/api/getUserInf", {
                     method: "GET",
-                    credentials: "include", // Для отправки куки
+                    credentials: "include",
                 });
 
                 if (!response.ok) {

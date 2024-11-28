@@ -83,7 +83,7 @@ export default function Home() {
 
     return (
         <div>
-            <Header />
+            <Header/>
             {currUserRole === "admin" ? (
                 <Link
                     href="/createProduct/"
@@ -97,34 +97,34 @@ export default function Home() {
                     <p>Загрузка товаров...</p>
                 ) : products.length > 0 ? (
                     products.map((product) => (
-                        <div
-                            key={product.id}
-                            className="border border-gray-300 rounded-lg p-4 shadow-md w-[300px]"
-                        >
-                            {product.image ? (
-                                <Image
-                                    src={product.image}
-                                    alt={product.name}
-                                    width={180}
-                                    height={180}
-                                    className="object-cover rounded-md"
-                                />
-                            ) : (
-                                <div className="bg-gray-200 w-[200px] h-[200px] flex items-center justify-center rounded-md">
-                                    <span className="text-gray-500">Нет изображения</span>
-                                </div>
-                            )}
-                            <h3 className="text-lg font-bold mt-2">{product.name}</h3>
-                            <p className="text-sm text-gray-600">
-                                {product.description.length > 100
-                                    ? product.description.slice(0, 100) + "..."
-                                    : product.description}
-                            </p>
-                            <p className="text-md text-gray-800">Компания: {product.company}</p>
-                            <p className="text-md font-semibold mt-1">
-                                Рейтинг: {product.average_rating}
-                            </p>
-                            <p className="text-sm text-gray-600">Комментарии: {product.comm_count}</p>
+                        <div key={product.id} className="border border-gray-300 rounded-lg p-4 shadow-md w-[300px]">
+                            <Link href={`/products/${product.id}`} className="block">
+                                {product.image ? (
+                                    <Image
+                                        src={product.image}
+                                        alt={product.name}
+                                        width={180}
+                                        height={180}
+                                        className="object-cover rounded-md"
+                                    />
+                                ) : (
+                                    <div
+                                        className="bg-gray-200 w-[200px] h-[200px] flex items-center justify-center rounded-md">
+                                        <span className="text-gray-500">Нет изображения</span>
+                                    </div>
+                                )}
+                                <h3 className="text-lg font-bold mt-2">{product.name}</h3>
+                                <p className="text-sm text-gray-600">
+                                    {product.description.length > 100
+                                        ? product.description.slice(0, 100) + "..."
+                                        : product.description}
+                                </p>
+                                <p className="text-md text-gray-800">Компания: {product.company}</p>
+                                <p className="text-md font-semibold mt-1">
+                                    Рейтинг: {product.average_rating}
+                                </p>
+                                <p className="text-sm text-gray-600">Комментарии: {product.comm_count}</p>
+                            </Link>
                             {currUserRole === "admin" && (
                                 <div className="flex gap-2 mt-4">
                                     <Link
@@ -147,6 +147,7 @@ export default function Home() {
                     <p>Товары отсутствуют</p>
                 )}
             </div>
+
         </div>
     );
 }
