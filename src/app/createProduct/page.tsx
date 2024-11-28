@@ -19,7 +19,7 @@ export default function AddProductForm() {
     });
     const [message, setMessage] = useState<string | null>(null);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // Статус администратора
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const router = useRouter();
 
     useEffect(() => {

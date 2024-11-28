@@ -17,8 +17,37 @@ export default function EditProduct() {
     const [product, setProduct] = useState<Product | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [cookies] = useCookies(["auth_token"]);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const router = useRouter();
     const params = useParams();
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            try {
+                const response = await fetch("/api/getUserInf", {
+                    method: "GET",
+                    credentials: "include", // Для отправки куки
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user information");
+                }
+
+                const data = await response.json();
+                if (data.userRole === "admin") {
+                    setIsAdmin(true); // Пользователь администратор
+                } else {
+                    setIsAdmin(false); // Пользователь не имеет доступа
+                    router.push("/"); // Перенаправляем
+                }
+            } catch (error) {
+                console.error("Ошибка проверки роли:", error);
+                router.push("/"); // Перенаправляем в случае ошибки
+            }
+        };
+
+        checkAdmin();
+    }, [router]);
 
     const fetchProduct = async () => {
         try {
@@ -70,6 +99,14 @@ export default function EditProduct() {
             updateProduct(product);
         }
     };
+
+    if (isAdmin === null) {
+        return <div>Проверка прав доступа...</div>; // Пока статус не определён
+    }
+
+    if (!isAdmin) {
+        return null; // Не показываем ничего, если доступ запрещён
+    }
 
     if (isLoading) return <p>Загрузка...</p>;
 
