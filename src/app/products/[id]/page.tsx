@@ -1,8 +1,9 @@
 "use client"
 import Image from "next/image";
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import {useParams} from "next/navigation";
 import {Header} from "@/app/components/header";
+import Link from "next/link";
 
 interface Product {
     id: number;
@@ -56,6 +57,7 @@ export default function ProductPage() {
         <div>
             <Header/>
             <div className="max-w-4xl mx-auto px-4 py-8">
+
                 <div className="flex flex-col md:flex-row items-center bg-white shadow-md rounded-lg overflow-hidden">
                     <img
                         src={product.image}
@@ -67,14 +69,22 @@ export default function ProductPage() {
                         <p className="text-gray-600 text-sm mb-4">Производитель: <span
                             className="text-gray-800">{product.company}</span></p>
                         <p className="text-gray-600 text-sm mb-4">
-                            Рейтинг: <span className="text-yellow-500 font-bold">{product.average_rating}</span> ⭐
+                            Рейтинг:{" "}<span className="text-yellow-500 font-bold">{parseFloat(product.average_rating).toFixed(1)}</span>{" "}⭐
                         </p>
+
                         <p className="text-gray-600 text-sm mb-4">
                             Отзывы: <span className="font-semibold">{product.comm_count}</span>
                         </p>
                         <p className="text-gray-600 mb-6">{product.description}</p>
                     </div>
                 </div>
+                <Link
+                    href={`/products/${product.id}/add_comment/`}
+                    className="w-[180px] bg-indigo-600 text-white py-1 px-2 rounded-lg flex justify-center gap-2 hover:bg-indigo-700 my-2"
+                >
+                    Написать отзыв
+                    <Image src="/hand.svg" width={25} height={25} alt=""/>
+                </Link>
             </div>
         </div>
 

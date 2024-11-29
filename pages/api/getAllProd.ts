@@ -1,4 +1,5 @@
-// pages/api/getAllProd.ts
+"use server"
+
 import pool from "@/lib/db";
 import { NextApiRequest, NextApiResponse } from 'next';
 

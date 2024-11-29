@@ -36,6 +36,7 @@ export default async function Login(req: NextApiRequest, res: NextApiResponse) {
         // Генерация токена
         const tokenPayload = {
             userId: userData.id,
+            username: userData.username,
             userRole: userData.role,
         };
         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET!, {
