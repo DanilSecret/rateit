@@ -6,6 +6,12 @@ import {Header} from "@/app/components/header";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
 
+interface User {
+    id: string;
+    username: string;
+    role:string;
+}
+
 interface Product {
     id: number;
     name: string;
@@ -34,7 +40,7 @@ export default function ProductPage() {
     const [product, setProduct] = useState<Product | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
     const [cookies] = useCookies(["auth_token"]);
-    const [currUser, setCurrUser] = useState([]);
+    const [currUser, setCurrUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isAuth, setIsAuth] = useState(false);
 
@@ -129,6 +135,9 @@ export default function ProductPage() {
     };
 
 
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     return (
         <div>
             <Header/>
@@ -182,7 +191,7 @@ export default function ProductPage() {
                                 )}
                                 {comment.price && <p className="text-gray-600">Цена: {comment.price}</p>}
 
-                                {(comment.author === currUser.username || currUser.role === 'admin') && (
+                                {(comment.author === currUser?.username || currUser?.role === 'admin') && (
                                     <button
                                         onClick={() => deleteComment(comment.id, product.id)}
                                         className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"

@@ -33,7 +33,8 @@ export default async function deleteProduct(req: NextApiRequest, res: NextApiRes
 
             // 2. Обновляем столбец comm_count в таблице products
             await pool.query(
-                'UPDATE products SET comm_count = comm_count - 1 WHERE id = $1',
+                'UPDATE products SET comm_count = comm_count -' +
+                ' 1 WHERE id = $1',
                 [productId]
             );
             // 3. Обновляем столбец average_rating в таблице products
