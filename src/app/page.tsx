@@ -15,7 +15,7 @@ interface Product {
     description: string;
 }
 
-const ITEMS_PER_PAGE = 7;
+const ITEMS_PER_PAGE = 12;
 
 export default function Home() {
     const [products, setProducts] = useState<Product[]>([]);

@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import {useParams} from "next/navigation";
 import {Header} from "@/app/components/header";
 import Link from "next/link";
+import { useCookies } from "react-cookie";
 
 interface Product {
     id: number;
@@ -15,9 +16,25 @@ interface Product {
     description: string;
 }
 
+interface Comment {
+    id: number;
+    rate: number;
+    description: string;
+    plus?: string;
+    minus?: string;
+    buy_method?: string;
+    price?: string;
+    product_id: number;
+    author: string;
+    user_id: string;
+}
+
 export default function ProductPage() {
     const params = useParams();
     const [product, setProduct] = useState<Product | null>(null);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [cookies] = useCookies(["auth_token"]);
+    const [currUser, setCurrUser] = useState("");
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -26,14 +43,12 @@ export default function ProductPage() {
         const fetchProduct = async () => {
             try {
                 setIsLoading(true);
-                // const response = await fetch(`/api/getOneProd/${params?.id}`);
                 const response = await fetch(`/api/getOneProd?id=${params?.id}`);
                 const result = await response.json();
-                if (response.ok) {
-
+                if (response.ok && result.product) {
                     setProduct(result.product);
                 } else {
-                    console.error("Ошибка получения данных");
+                    console.error("Ошибка получения данных о товаре");
                 }
             } catch (error) {
                 console.error(error);
@@ -41,9 +56,43 @@ export default function ProductPage() {
                 setIsLoading(false);
             }
         };
+        const checkUser = async () => {
+            try {
+                const response = await fetch(`/api/getUserInf?cookie=${cookies}`, { method: "GET" });
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log(result.userData)
+                    setCurrUser(result.userData);
+                } else {
+                    console.error("Ошибка получения данных");
+                }
+            } catch (error) {
+                console.error("Ошибка при отправке данных:", error);
+            }
+        };
+
+
+        const fetchComments = async () => {
+            try {
+                const response = await fetch(`/api/getAllComments?id=${params?.id}`);
+                const result = await response.json();
+                if (response.ok && Array.isArray(result.comments)) {
+                    setComments(result.comments);
+                } else {
+                    setComments([]); // Если данные некорректны, устанавливаем пустой массив
+                    console.error("Ошибка получения комментариев");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
         fetchProduct();
+        fetchComments();
+        checkUser();
     }, [params?.id]);
+
 
     if (isLoading) {
         return <div className="text-center text-lg font-bold mt-10">Загрузка...</div>;
@@ -69,7 +118,8 @@ export default function ProductPage() {
                         <p className="text-gray-600 text-sm mb-4">Производитель: <span
                             className="text-gray-800">{product.company}</span></p>
                         <p className="text-gray-600 text-sm mb-4">
-                            Рейтинг:{" "}<span className="text-yellow-500 font-bold">{parseFloat(product.average_rating).toFixed(1)}</span>{" "}⭐
+                            Рейтинг:{" "}<span
+                            className="text-yellow-500 font-bold">{parseFloat(product.average_rating).toFixed(1)}</span>{" "}⭐
                         </p>
 
                         <p className="text-gray-600 text-sm mb-4">
@@ -85,6 +135,45 @@ export default function ProductPage() {
                     Написать отзыв
                     <Image src="/hand.svg" width={25} height={25} alt=""/>
                 </Link>
+
+                <div className="bg-white p-4 rounded-lg shadow mt-6">
+                    <h2 className="text-xl font-bold mb-4">Отзывы</h2>
+                    {Array.isArray(comments) && comments.length > 0 ? (
+                        comments.map((comment) => (
+                            <div key={comment.id} className="border-b py-4">
+                                <h2>Автор: {comment.author}</h2>
+                                <p className="text-sm text-gray-600">Оценка: {comment.rate} ⭐</p>
+                                <p className="text-gray-800">Комментарий: {comment.description}</p>
+                                {comment.plus && <p className="text-green-600">Плюсы: {comment.plus}</p>}
+                                {comment.minus && <p className="text-red-600">Минусы: {comment.minus}</p>}
+                                {comment.buy_method && (
+                                    <p className="text-gray-600">Способ покупки: {comment.buy_method}</p>
+                                )}
+                                {comment.price && <p className="text-gray-600">Цена: {comment.price}</p>}
+
+                                {currUser.username === "admin" && (
+                                    <div className="flex gap-2 mt-4">
+                                        <Link
+                                            href={`/editProduct/${product.id}`}
+                                            className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                        >
+                                            Изменить
+                                        </Link>
+                                        <button
+                                            // onClick={() => deleteProduct(product.id)}
+                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                        >
+                                            Удалить
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-600">Пока отзывов нет. Будьте первым!</p>
+                    )}
+                </div>
+
             </div>
         </div>
 
