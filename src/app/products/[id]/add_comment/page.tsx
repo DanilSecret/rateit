@@ -29,28 +29,22 @@ export default function AddCommentForm() {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const params = useParams();
+    const [isAuth, setIsAuth] = useState(false);
     const [cookies] = useCookies(["auth_token"]);
     const router = useRouter();
 
     useEffect(() => {
-        // Для получения информации о пользователе, если требуется авторизация или роль
         const checkAdmin = async () => {
             try {
-                const response = await fetch("/api/getUserInf", {
-                    method: "GET",
-                    credentials: "include",
-                });
+                const response = await fetch(`/api/getUserInf?cookie=${cookies}`, { method: "GET" });
+                const result = await response.json();
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch user information");
-                }
-
-                const data = await response.json();
-                if (data.userRole === "admin") {
-                    setIsAdmin(true);
+                if (response.ok) {
+                    setIsAuth(true);
                 } else {
-                    setIsAdmin(false);
-                    router.push("/"); // Перенаправление для пользователей без прав
+                    console.error("Ошибка получения данных");
+                    setIsAuth(false);
+                    router.push("/");
                 }
             } catch (error) {
                 console.error("Ошибка проверки роли:", error);
@@ -99,11 +93,7 @@ export default function AddCommentForm() {
         }
     };
 
-    if (isAdmin === null) {
-        return <div>Проверка прав доступа...</div>;
-    }
-
-    if (!isAdmin) {
+    if (!isAuth) {
         return null;
     }
 

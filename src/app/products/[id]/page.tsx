@@ -34,8 +34,9 @@ export default function ProductPage() {
     const [product, setProduct] = useState<Product | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
     const [cookies] = useCookies(["auth_token"]);
-    const [currUser, setCurrUser] = useState("");
+    const [currUser, setCurrUser] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {
         if (!params) return;
@@ -58,17 +59,20 @@ export default function ProductPage() {
         };
         const checkUser = async () => {
             try {
+
                 const response = await fetch(`/api/getUserInf?cookie=${cookies}`, { method: "GET" });
                 const result = await response.json();
 
                 if (response.ok) {
-                    console.log(result.userData)
+                    setIsAuth(true);
                     setCurrUser(result.userData);
                 } else {
                     console.error("Ошибка получения данных");
+                    setIsAuth(false);
                 }
             } catch (error) {
                 console.error("Ошибка при отправке данных:", error);
+                setIsAuth(false);
             }
         };
 
@@ -102,6 +106,29 @@ export default function ProductPage() {
         return <div className="text-center text-lg font-bold mt-10">Товар не найден</div>;
     }
 
+    const deleteComment = async (commentId: number, productId: number) => {
+        if (!confirm("Вы уверены, что хотите удалить этот комментарий?")) return;
+
+        try {
+            const response = await fetch(`/api/deleteComment?id=${commentId}&productId=${productId}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${cookies.auth_token}`,
+                },
+            });
+
+            if (response.ok) {
+                alert("Комментарий успешно удален.");
+                window.location.reload(); // Обновление страницы
+            } else {
+                console.error("Ошибка при удалении комментария");
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    };
+
+
     return (
         <div>
             <Header/>
@@ -128,6 +155,7 @@ export default function ProductPage() {
                         <p className="text-gray-600 mb-6">{product.description}</p>
                     </div>
                 </div>
+                {isAuth ? (
                 <Link
                     href={`/products/${product.id}/add_comment/`}
                     className="w-[180px] bg-indigo-600 text-white py-1 px-2 rounded-lg flex justify-center gap-2 hover:bg-indigo-700 my-2"
@@ -135,6 +163,9 @@ export default function ProductPage() {
                     Написать отзыв
                     <Image src="/hand.svg" width={25} height={25} alt=""/>
                 </Link>
+                ) : (
+                    <></>
+                )}
 
                 <div className="bg-white p-4 rounded-lg shadow mt-6">
                     <h2 className="text-xl font-bold mb-4">Отзывы</h2>
@@ -151,22 +182,16 @@ export default function ProductPage() {
                                 )}
                                 {comment.price && <p className="text-gray-600">Цена: {comment.price}</p>}
 
-                                {currUser.username === "admin" && (
-                                    <div className="flex gap-2 mt-4">
-                                        <Link
-                                            href={`/editProduct/${product.id}`}
-                                            className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
-                                        >
-                                            Изменить
-                                        </Link>
-                                        <button
-                                            // onClick={() => deleteProduct(product.id)}
-                                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                        >
-                                            Удалить
-                                        </button>
-                                    </div>
+                                {(comment.author === currUser.username || currUser.role === 'admin') && (
+                                    <button
+                                        onClick={() => deleteComment(comment.id, product.id)}
+                                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    >
+                                        Удалить
+                                    </button>
+
                                 )}
+
                             </div>
                         ))
                     ) : (
