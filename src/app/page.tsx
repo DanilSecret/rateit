@@ -117,23 +117,27 @@ export default function Home() {
                             <div key={product.id} className="border border-gray-300 rounded-lg p-4 shadow-md w-[300px] m-2">
                                 <Link href={`/products/${product.id}`} className="block">
                                     {product.image ? (
-                                        <Image
-                                            src={product.image}
-                                            alt={product.name}
-                                            width={180}
-                                            height={180}
-                                            className="object-cover rounded-md"
-                                        />
+                                        <div className="h-[240px] flex items-center">
+                                            <Image
+                                                src={product.image}
+                                                alt={product.name}
+                                                width={180}
+                                                height={240}
+                                                className="rounded-md mx-auto"
+                                            />
+                                        </div>
                                     ) : (
                                         <div
-                                            className="bg-gray-200 w-[200px] h-[200px] flex items-center justify-center rounded-md">
+                                            className="bg-gray-200 w-[180px] h-[240px] flex items-center justify-center rounded-md">
                                             <span className="text-gray-500">Нет изображения</span>
                                         </div>
                                     )}
-                                    <h3 className="text-lg font-bold mt-2">{product.name}</h3>
-                                    <p className="text-sm text-gray-600">
-                                        {product.description.length > 100
-                                            ? product.description.slice(0, 100) + "..."
+                                    <h3 className="text-md font-bold mt-2">
+                                        {product.name.length > 25 ? product.name.slice(0,25)+"..." : product.name}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 h-[80px]">
+                                        {product.description.length > 125
+                                            ? product.description.slice(0, 125) + "..."
                                             : product.description}
                                     </p>
                                     <p className="text-md text-gray-800">Компания: {product.company}</p>
