@@ -101,7 +101,7 @@ export default function SearchPage() {
         <div className="flex flex-col min-h-screen">
             <Header />
             <div>
-                <div className="p-3">
+                <div className="p-5">
                     <h2>Поиск товаров</h2>
                     <div className="flex gap-4 items-center mb-5">
                         <input
